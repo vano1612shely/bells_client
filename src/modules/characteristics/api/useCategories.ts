@@ -1,0 +1,14 @@
+import { useQuery } from '@tanstack/react-query'
+import type { UseQueryConfig } from '@/shared/types/queryConfig.ts'
+import { withQueryConfig } from '@/shared/lib/withQueryConfig.ts'
+import { CharacteristicsApi } from '@/modules/characteristics/api/api.ts'
+
+export const useCategories = (config?: UseQueryConfig) => {
+  const { enabled, queryKey } = withQueryConfig(config)
+  const { data, isLoading, refetch, error } = useQuery({
+    queryKey: [CharacteristicsApi.baseKey, ...queryKey],
+    queryFn: CharacteristicsApi.getCategories,
+    enabled,
+  })
+  return { data, isLoading, refetch, error }
+}
