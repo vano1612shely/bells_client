@@ -12,7 +12,7 @@ export const columns = (): Array<ColumnDef<Order>> => [
     accessorKey: 'name',
     header: "Ім'я",
   },
-  { accessorKey: 'phone', header: 'Телефон' },
+  { accessorKey: 'email', header: 'Email' },
   {
     accessorKey: 'totalQuantity',
     header: 'Кількість',

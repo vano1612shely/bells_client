@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Gift, Phone, User } from 'lucide-react'
+import { Gift, Mail, User } from 'lucide-react'
 import { useNavigate } from '@tanstack/react-router'
 
 export default function OrderForm() {
-  const [form, setForm] = useState({ name: '', phone: '' })
+  const [form, setForm] = useState({ name: '', email: '' })
   const navigate = useNavigate()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -16,7 +16,7 @@ export default function OrderForm() {
     navigate({
       to: '/order',
       search: {
-        phone: form.phone,
+        email: form.email,
         name: form.name,
       },
     })
@@ -66,16 +66,16 @@ export default function OrderForm() {
 
             {/* Téléphone */}
             <div className="flex-1 relative">
-              <Phone
+              <Mail
                 className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
                 size={20}
               />
               <input
-                type="tel"
-                name="phone"
-                value={form.phone}
+                type="email"
+                name="email"
+                value={form.email}
                 onChange={handleChange}
-                placeholder="Votre téléphone"
+                placeholder="Votre e-mail"
                 required
                 className="w-full pl-12 pr-4 py-4 rounded-xl border border-gray-300 focus:ring-2 focus:ring-green-400 outline-none shadow-sm text-lg"
               />

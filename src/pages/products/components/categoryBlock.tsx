@@ -1,3 +1,4 @@
+import { Loader2 } from 'lucide-react'
 import type { Category } from '@/modules/characteristics/types/types.ts'
 import {
   Card,
@@ -13,7 +14,6 @@ import {
   OptionCard,
   useOptions,
 } from '@/modules/characteristics'
-import { Loader2 } from 'lucide-react'
 
 export const CategoryBlock = ({ item }: { item: Category }) => {
   const { data, isLoading } = useOptions(item.id)

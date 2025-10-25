@@ -2,13 +2,13 @@ import type { OrderSchema } from '@/modules/orders'
 import type { Category } from '@/modules/characteristics'
 
 export const orderDefaultValues = (
-  phone?: string,
+  email?: string,
   name?: string,
   categories?: Array<Category>,
 ): OrderSchema => {
   return {
     name: name || '',
-    phone: phone || '',
+    email: email || '',
     items: [
       {
         quantity: 1,
@@ -26,6 +26,11 @@ export const orderDefaultValues = (
           originImage: null!,
           image: null!,
         },
+        backPhoto: {
+          originImage: null!,
+          image: null!,
+        },
+        backTemplateId: null,
       },
     ],
   }

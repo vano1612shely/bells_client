@@ -10,7 +10,7 @@ export default function HeaderSection() {
 
       {/* bannière supérieure */}
       <div className="w-full bg-yellow-300 p-3 font-extrabold text-red-700 text-center text-2xl rounded-b-2xl shadow-md">
-        🎄 Boule de Noël avec vos photos 🎁
+        🎄 Boule de Noël Personnalisée 🎁
       </div>
 
       <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-8 mt-8 px-4 items-center">
@@ -22,11 +22,16 @@ export default function HeaderSection() {
           viewport={{ once: true }}
           className="p-4"
         >
-          <img
-            src="/1.jpg"
-            alt="Boule de Noël"
-            className="w-full h-full object-cover rounded-3xl shadow-2xl border-4 border-white"
-          />
+          <div className="relative w-full aspect-[4/5] overflow-hidden rounded-3xl shadow-2xl border-4 border-white">
+            <video
+              src="/vid1.mp4"
+              autoPlay
+              playsInline
+              loop
+              muted
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          </div>
         </motion.div>
 
         {/* partie droite */}

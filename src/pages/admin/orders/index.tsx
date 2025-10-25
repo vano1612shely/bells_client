@@ -12,10 +12,10 @@ export default function AdminOrdersPage() {
   const [page, setPage] = useState(1)
   const [limit] = useState(10)
   const [statusFilter, setStatusFilter] = useState('')
-  const [phoneFilter, setPhoneFilter] = useState('')
+  const [emailFilter, setEmailFilter] = useState('')
 
   const { data, isLoading, error } = useOrders({
-    phone: phoneFilter,
+    email: emailFilter,
     status: statusFilter,
     limit,
     page,
@@ -46,9 +46,9 @@ export default function AdminOrdersPage() {
             <div className="flex-1">
               <input
                 type="text"
-                placeholder="Пошук за телефоном..."
-                value={phoneFilter}
-                onChange={(e) => setPhoneFilter(e.target.value)}
+                placeholder="Пошук за email..."
+                value={emailFilter}
+                onChange={(e) => setEmailFilter(e.target.value)}
                 className="w-full px-4 py-2 border rounded-lg"
               />
             </div>

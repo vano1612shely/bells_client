@@ -4,7 +4,7 @@ import { OrderPage } from '@/pages/order'
 
 const searchSchema = z.object({
   name: z.string().optional(),
-  phone: z.string().optional(),
+  email: z.string().optional(),
 })
 
 export const Route = createFileRoute('/order/')({

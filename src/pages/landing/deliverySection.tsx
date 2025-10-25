@@ -9,7 +9,7 @@ const steps = [
   },
   {
     title: 'Étape 2',
-    text: 'Nous réalisons les maquettes de vos boules à partir de vos photos et les envoyons pour validation. Une fois confirmées, la commande est préparée.',
+    text: 'Nous transformons vos photos en magnifiques maquettes de boules, que nous vous envoyons pour validation. Une fois votre accord reçu, chaque boule est soigneusement préparée, prête à illuminer vos souvenirs et ceux de vos proches.',
     img: '/delivery2.jpg',
   },
   {

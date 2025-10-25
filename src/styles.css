@@ -147,3 +147,6 @@ code {
     animation: scroll 20s linear infinite;
 }
 
+.backface-hidden {
+    backface-visibility: hidden;
+}

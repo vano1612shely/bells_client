@@ -4,12 +4,16 @@ export interface OrderItem {
   characteristics: Record<string, string>
   originImagePath: string
   imagePath: string | null
+  backImagePath: string
+  backOriginImagePath: string
+  backSideType: 'template' | 'custom'
+  backTemplateId: string | null
 }
 
 export interface Order {
   id: string
   name: string
-  phone: string
+  email: string
   status: OrderStatus
   pricePerUnit: number
   totalPrice: number

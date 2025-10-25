@@ -26,7 +26,7 @@ const products = [
       'Boule avec une de vos photos, et de l’autre côté un message de vœux + une boîte cadeau.',
     size: 'Diamètre : 8–10 cm.',
     material: 'Matériau : acrylique (résistant aux chocs !)',
-    img: '/img3.png',
+    img: '/img3.jpg',
   },
 ]
 

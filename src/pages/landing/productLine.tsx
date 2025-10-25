@@ -1,4 +1,3 @@
-
 export default function ProductLine() {
   const images = [
     '/1.jpg',
@@ -7,7 +6,7 @@ export default function ProductLine() {
     '/4.jpg',
     '/img1.jpg',
     '/img2.jpg',
-    '/img3.png',
+    '/img3.jpg',
     '/features1.jpg',
     '/features2.jpg',
     '/features3.jpg',

@@ -13,21 +13,16 @@ import {
 interface BallPhotoEditorProps {
   file: File | null
   onChange?: (file: File) => void
-}
-
-interface BallPhotoEditorProps {
-  file: File | null
-  onChange?: (file: File) => void
+  isEdited?: boolean
 }
 
 export const BallPhotoEditor: React.FC<BallPhotoEditorProps> = ({
   file,
   onChange,
+  isEdited,
 }) => {
-  const [isModalOpen, setIsModalOpen] = useState(true)
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
-
-  // 🆕 Зберігаємо трансформації (масштаб, позицію, кут)
   const [transform, setTransform] = useState<{
     scale: number
     left: number
@@ -42,21 +37,21 @@ export const BallPhotoEditor: React.FC<BallPhotoEditorProps> = ({
   }
 
   useEffect(() => {
-    if (file) {
-      handleFileLoad(file)
-    }
+    if (file) handleFileLoad(file)
   }, [file])
-
+  useEffect(() => {
+    if (!isEdited) setIsModalOpen(true)
+  }, [isEdited])
   const handleSaveEdited = (newFile: File, transformData: any) => {
     onChange?.(newFile)
     handleFileLoad(newFile)
-    setTransform(transformData) // 🆕 зберігаємо стан
+    setTransform(transformData)
     setIsModalOpen(false)
   }
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <div className="relative w-[350px] h-[350px] rounded-full overflow-hidden flex items-center justify-center bg-gray-100 border border-border">
+      <div className="relative w-[300px] h-[300px] sm:w-[350px] sm:h-[350px] rounded-full overflow-hidden flex items-center justify-center bg-gray-100 border border-border">
         {previewUrl ? (
           <img
             src={previewUrl}
@@ -65,7 +60,7 @@ export const BallPhotoEditor: React.FC<BallPhotoEditorProps> = ({
             style={{ clipPath: 'circle(50% at 50% 50%)' }}
           />
         ) : (
-          <div className="text-gray-400">Фото не завантажено</div>
+          <div className="text-gray-400">Photo non téléchargée</div>
         )}
       </div>
 
@@ -80,9 +75,9 @@ export const BallPhotoEditor: React.FC<BallPhotoEditorProps> = ({
       )}
 
       <AlertDialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <AlertDialogContent className="w-auto md:min-w-[550px]">
+        <AlertDialogContent className="w-[95vw] max-w-[450px] overflow-y-auto max-h-[90vh] p-3 sm:p-4">
           <AlertDialogHeader>
-            <AlertDialogTitle>Édition de la photo</AlertDialogTitle>
+            <AlertDialogTitle>Retouche photo</AlertDialogTitle>
           </AlertDialogHeader>
           <BallEditorCanvas
             file={file}
@@ -115,33 +110,43 @@ const BallEditorCanvas: React.FC<BallEditorCanvasProps> = ({
   const fabricCanvasRef = useRef<CanvasType | null>(null)
   const imageRef = useRef<FabricImage | null>(null)
 
-  const CANVAS_SIZE = 500
-  const BALL_RADIUS = 160
+  const [canvasSize, setCanvasSize] = useState(400)
+
+  // 🔹 Динамічне визначення розміру canvas
+  useEffect(() => {
+    const handleResize = () => {
+      const size = Math.min(window.innerWidth - 40, 400)
+      setCanvasSize(size)
+    }
+    handleResize()
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  const BALL_RADIUS = canvasSize / 3.2
 
   useEffect(() => {
     if (!canvasRef.current) return
 
-    // 🧹 Якщо був попередній canvas — видаляємо перед створенням нового
     if (fabricCanvasRef.current) {
       fabricCanvasRef.current.dispose()
       fabricCanvasRef.current = null
     }
 
     const canvas = new Canvas(canvasRef.current, {
-      width: CANVAS_SIZE,
-      height: CANVAS_SIZE,
+      width: canvasSize,
+      height: canvasSize,
       backgroundColor: '#f9fafb',
       preserveObjectStacking: true,
     })
     fabricCanvasRef.current = canvas
 
-    // Контур кульки
     const outline = new Circle({
       radius: BALL_RADIUS,
-      left: CANVAS_SIZE / 2,
-      top: CANVAS_SIZE / 2,
+      left: canvasSize / 2,
+      top: canvasSize / 2,
       stroke: '#3b82f6',
-      strokeWidth: 4,
+      strokeWidth: 3,
       fill: 'transparent',
       originX: 'center',
       originY: 'center',
@@ -149,17 +154,15 @@ const BallEditorCanvas: React.FC<BallEditorCanvasProps> = ({
       evented: false,
     })
     canvas.add(outline)
-    canvas.moveObjectTo(outline, canvas.getObjects().length - 1)
 
     if (file) loadImage(file)
 
-    // 🧹 При розмонтуванні — звільняємо
     return () => {
       canvas.dispose()
       fabricCanvasRef.current = null
       imageRef.current = null
     }
-  }, [file])
+  }, [file, canvasSize])
 
   const loadImage = (file: File) => {
     const reader = new FileReader()
@@ -176,20 +179,17 @@ const BallEditorCanvas: React.FC<BallEditorCanvasProps> = ({
         const img = new Image(imgElement, {
           originX: 'center',
           originY: 'center',
-          cornerStyle: 'circle',
-          cornerSize: 10,
-          transparentCorners: false,
           lockUniScaling: true,
-          hasBorders: true,
           hasControls: true,
+          hasBorders: true,
           uniformScaling: true,
         })
 
         img.setControlsVisibility({
-          mt: false, // верхній середній
-          mb: false, // нижній середній
-          ml: false, // лівий середній
-          mr: false, // правий середній
+          mt: false,
+          mb: false,
+          ml: false,
+          mr: false,
         })
 
         const scale = Math.max(
@@ -207,8 +207,8 @@ const BallEditorCanvas: React.FC<BallEditorCanvasProps> = ({
         } else {
           img.scale(scale)
           img.set({
-            left: CANVAS_SIZE / 2,
-            top: CANVAS_SIZE / 2,
+            left: canvasSize / 2,
+            top: canvasSize / 2,
           })
         }
 
@@ -232,35 +232,25 @@ const BallEditorCanvas: React.FC<BallEditorCanvasProps> = ({
     canvas.discardActiveObject()
     canvas.renderAll()
 
-    // Створюємо тимчасовий canvas для експорту
-    const tempCanvas = document.createElement('canvas')
     const diameter = BALL_RADIUS * 2
+    const tempCanvas = document.createElement('canvas')
     tempCanvas.width = diameter
     tempCanvas.height = diameter
     const ctx = tempCanvas.getContext('2d')!
 
-    // Малюємо прозорий фон
     ctx.clearRect(0, 0, diameter, diameter)
-
-    // Створюємо круглу маску
     ctx.save()
     ctx.beginPath()
     ctx.arc(BALL_RADIUS, BALL_RADIUS, BALL_RADIUS, 0, Math.PI * 2)
     ctx.closePath()
     ctx.clip()
 
-    // Зміщуємо систему координат так, щоб центр кола був у (0, 0)
     ctx.translate(BALL_RADIUS, BALL_RADIUS)
-
-    // Застосовуємо трансформації зображення
     ctx.rotate(((img.angle || 0) * Math.PI) / 180)
     ctx.scale(img.scaleX || 1, img.scaleY || 1)
 
-    // Обчислюємо позицію зображення відносно центру кола на основному canvas
-    const imgLeft = (img.left || CANVAS_SIZE / 2) - CANVAS_SIZE / 2
-    const imgTop = (img.top || CANVAS_SIZE / 2) - CANVAS_SIZE / 2
-
-    // Малюємо зображення з урахуванням його originX/originY
+    const imgLeft = (img.left || canvasSize / 2) - canvasSize / 2
+    const imgTop = (img.top || canvasSize / 2) - canvasSize / 2
     const imgElement = img.getElement() as HTMLImageElement
     ctx.drawImage(
       imgElement,
@@ -269,10 +259,8 @@ const BallEditorCanvas: React.FC<BallEditorCanvasProps> = ({
       imgElement.width,
       imgElement.height,
     )
-
     ctx.restore()
 
-    // Конвертуємо в файл
     const dataURL = tempCanvas.toDataURL('image/png', 1)
     const blob = await fetch(dataURL).then((r) => r.blob())
     const newFile = new File([blob], file!.name.replace(/\.[^.]+$/, '.png'), {
@@ -281,8 +269,8 @@ const BallEditorCanvas: React.FC<BallEditorCanvasProps> = ({
 
     const transform = {
       scale: img.scaleX || 1,
-      left: img.left || CANVAS_SIZE / 2,
-      top: img.top || CANVAS_SIZE / 2,
+      left: img.left || canvasSize / 2,
+      top: img.top || canvasSize / 2,
       angle: img.angle || 0,
     }
 
@@ -310,8 +298,11 @@ const BallEditorCanvas: React.FC<BallEditorCanvasProps> = ({
 
   return (
     <div className="flex flex-col items-center gap-3">
-      <canvas ref={canvasRef} className="border rounded-md shadow-sm" />
-      <div className="flex gap-2">
+      <canvas
+        ref={canvasRef}
+        className="border rounded-md shadow-sm w-full aspect-square"
+      />
+      <div className="flex flex-wrap justify-center gap-2 mt-2">
         <Button size="sm" variant="outline" onClick={zoomIn}>
           <ZoomIn className="w-4 h-4" />
         </Button>
@@ -322,7 +313,7 @@ const BallEditorCanvas: React.FC<BallEditorCanvasProps> = ({
           <RotateCw className="w-4 h-4" />
         </Button>
         <Button size="sm" onClick={saveImage}>
-          Enregistrer
+          Sauvegarder
         </Button>
       </div>
     </div>

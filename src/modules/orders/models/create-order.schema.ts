@@ -5,19 +5,23 @@ export const photoSchema = z.object({
   image: z.instanceof(File).nullable().optional(),
 })
 
+export const backPhotoSchema = z.object({
+  originImage: z.instanceof(File).nullable().optional(),
+  image: z.instanceof(File).nullable().optional(),
+})
+
 export const orderItemSchema = z.object({
-  quantity: z
-    .number()
-    .int('Quantity must be an integer')
-    .min(1, 'Quantity must be at least 1'),
+  quantity: z.number().min(1),
   characteristics: z.record(z.string(), z.string()).default({}),
   photo: photoSchema,
+  backTemplateId: z.string().nullable().optional(),
+  backPhoto: backPhotoSchema.optional(),
 })
 
 export const orderSchema = z.object({
   items: z.array(orderItemSchema).min(1, 'At least one item is required'),
   name: z.string(),
-  phone: z.string(),
+  email: z.string(),
 })
 
 export type PhotoSchema = z.infer<typeof photoSchema>

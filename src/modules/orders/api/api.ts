@@ -7,32 +7,52 @@ export const OrderApi = {
   baseKey: 'orders',
   createOrder: (data: OrderSchema) => {
     const formData = new FormData()
+
     formData.append('name', data.name)
-    formData.append('phone', data.phone)
+    formData.append('email', data.email)
+
     data.items.forEach((item, index) => {
       formData.append(`items[${index}][quantity]`, item.quantity.toString())
       formData.append(
         `items[${index}][characteristics]`,
         JSON.stringify(item.characteristics),
       )
-      formData.append('originImage', item.photo.originImage)
-      if (item.photo.image) {
-        formData.append('image', item.photo.image)
+
+      // Front side
+      if (item.photo?.originImage) {
+        formData.append(`originImage[${index}]`, item.photo.originImage)
+      }
+      if (item.photo?.image) {
+        formData.append(`image[${index}]`, item.photo.image)
+      }
+
+      if (item.backTemplateId) {
+        formData.append(`items[${index}][backSideType]`, 'template')
+        formData.append(`items[${index}][backTemplateId]`, item.backTemplateId)
+      } else if (item.backPhoto) {
+        formData.append(`items[${index}][backSideType]`, 'custom')
+        if (item.backPhoto.originImage) {
+          formData.append(
+            `backOriginImage[${index}]`,
+            item.backPhoto.originImage,
+          )
+        }
+        if (item.backPhoto.image) {
+          formData.append(`backImage[${index}]`, item.backPhoto.image)
+        }
       }
     })
 
-    const response = apiClient.post({
+    return apiClient.post({
       url: ORDERS_URLS.orders,
       payload: formData,
       contentType: 'multipart/form-data',
     })
-
-    return response
   },
   getOrders: (filters: {
     page?: number
     limit?: number
-    phone?: string
+    email?: string
     status?: string
   }) =>
     apiClient.get<{

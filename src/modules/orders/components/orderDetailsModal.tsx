@@ -1,4 +1,5 @@
 import { Download, Eye } from 'lucide-react'
+import { useState } from 'react'
 import type { Order } from '@/modules/orders/types'
 import {
   Dialog,
@@ -13,6 +14,7 @@ import { Button } from '@/shared/components/ui/button.tsx'
 import { StatusBadge } from '@/modules/orders/components/statusBadge.tsx'
 import { getFileLink } from '@/shared/api/utils.tsx'
 import { formatPrice } from '@/shared/lib/utils.ts'
+import { useBackTemplate } from '@/modules/back-templates'
 
 const ImageWithDownload = ({ src, alt }: { src: string; alt: string }) => {
   const handleDownload = async () => {
@@ -47,8 +49,10 @@ const ImageWithDownload = ({ src, alt }: { src: string; alt: string }) => {
 }
 
 export const OrderDetailsModal = ({ order }: { order: Order }) => {
+  const [open, setOpen] = useState(false)
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>
         <Button
           size="icon"
@@ -72,8 +76,8 @@ export const OrderDetailsModal = ({ order }: { order: Order }) => {
               <p className="font-medium">{order.name}</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Телефон</p>
-              <p className="font-medium">{order.phone}</p>
+              <p className="text-sm text-muted-foreground">Email</p>
+              <p className="font-medium">{order.email}</p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Статус</p>
@@ -89,6 +93,7 @@ export const OrderDetailsModal = ({ order }: { order: Order }) => {
 
           <Separator />
 
+          {/* Ціни */}
           <Card>
             <CardContent className="pt-6">
               <div className="grid grid-cols-2 gap-4">
@@ -101,9 +106,7 @@ export const OrderDetailsModal = ({ order }: { order: Order }) => {
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">
-                    Загальна кількість
-                  </p>
+                  <p className="text-sm text-muted-foreground">Кількість</p>
                   <p className="font-medium">{order.totalQuantity} шт</p>
                 </div>
                 <div>
@@ -115,7 +118,7 @@ export const OrderDetailsModal = ({ order }: { order: Order }) => {
                 <div>
                   <p className="text-sm text-muted-foreground">Знижка</p>
                   <p className="font-medium text-green-600">
-                    {formatPrice(order.discount)}{' '}
+                    {formatPrice(order.discount)}
                   </p>
                 </div>
                 <div className="col-span-2">
@@ -138,52 +141,103 @@ export const OrderDetailsModal = ({ order }: { order: Order }) => {
               Товари ({order.items.length || 0})
             </h3>
             <div className="space-y-4">
-              {order.items.map((item, index) => (
-                <Card key={item.id}>
-                  <CardContent className="pt-6">
-                    <div className="flex gap-4">
-                      <div className="flex gap-2">
-                        {item.originImagePath && (
-                          <ImageWithDownload
-                            src={getFileLink(item.originImagePath)}
-                            alt="Оригінал"
-                          />
-                        )}
-                        {item.imagePath && (
-                          <ImageWithDownload
-                            src={getFileLink(item.imagePath)}
-                            alt="Обробка"
-                          />
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-medium mb-2">Позиція #{index + 1}</p>
-                        <p className="text-sm text-muted-foreground mb-2">
-                          Кількість: {item.quantity} шт
-                        </p>
-                        {Object.keys(item.characteristics).length > 0 && (
-                          <div className="text-sm">
-                            <p className="font-medium mb-1">Характеристики:</p>
-                            <div className="grid grid-cols-2 gap-2">
-                              {Object.entries(item.characteristics).map(
-                                ([key, value]) => (
-                                  <div
-                                    key={key}
-                                    className="text-muted-foreground"
-                                  >
-                                    <span className="font-medium">{key}:</span>{' '}
-                                    {value}
-                                  </div>
-                                ),
+              {order.items.map((item) => {
+                const { data: backTemplate } = useBackTemplate(
+                  item.backTemplateId || '',
+                  {
+                    enabled:
+                      !!item.backTemplateId && item.backSideType === 'template',
+                  },
+                )
+
+                return (
+                  <Card key={item.id}>
+                    <CardContent className="pt-6 space-y-4">
+                      <div className="flex gap-4">
+                        {/* Передня частина */}
+                        <div className="flex flex-col gap-2">
+                          <p className="text-sm font-medium text-center">
+                            Передня частина
+                          </p>
+                          <div className="flex gap-2">
+                            {item.originImagePath && (
+                              <ImageWithDownload
+                                src={getFileLink(item.originImagePath)}
+                                alt="Оригінал передньої"
+                              />
+                            )}
+                            {item.imagePath && (
+                              <ImageWithDownload
+                                src={getFileLink(item.imagePath)}
+                                alt="Оброблена передня"
+                              />
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Задня частина */}
+                        <div className="flex flex-col gap-2">
+                          <p className="text-sm font-medium text-center">
+                            Задня частина
+                          </p>
+                          {item.backSideType === 'custom' && (
+                            <div className="flex gap-2">
+                              {item.backOriginImagePath && (
+                                <ImageWithDownload
+                                  src={getFileLink(item.backOriginImagePath)}
+                                  alt="Оригінал задньої"
+                                />
+                              )}
+                              {item.backImagePath && (
+                                <ImageWithDownload
+                                  src={getFileLink(item.backImagePath)}
+                                  alt="Оброблена задня"
+                                />
                               )}
                             </div>
-                          </div>
-                        )}
+                          )}
+
+                          {item.backSideType === 'template' && (
+                            <div className="flex flex-col items-center">
+                              {backTemplate?.imagePath && (
+                                <img
+                                  src={getFileLink(backTemplate.imagePath)}
+                                  alt={backTemplate.title}
+                                  className="w-24 h-24 object-cover rounded-md shadow"
+                                />
+                              )}
+                              <p className="text-xs text-muted-foreground mt-1">
+                                {backTemplate?.title ||
+                                  'Шаблон за замовчуванням'}
+                              </p>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+
+                      {/* Характеристики */}
+                      {Object.keys(item.characteristics).length > 0 && (
+                        <div className="text-sm">
+                          <p className="font-medium mb-1">Характеристики:</p>
+                          <div className="grid grid-cols-2 gap-2">
+                            {Object.entries(item.characteristics).map(
+                              ([key, value]) => (
+                                <div
+                                  key={key}
+                                  className="text-muted-foreground"
+                                >
+                                  <span className="font-medium">{key}:</span>{' '}
+                                  {value}
+                                </div>
+                              ),
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                )
+              })}
             </div>
           </div>
         </div>

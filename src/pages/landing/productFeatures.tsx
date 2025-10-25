@@ -7,7 +7,8 @@ const features = [
     highlight: 'Boule avec vos photos',
     description:
       'La meilleure idée de cadeau de Noël ! Désormais, votre photo ne sera pas seulement sur le téléphone ou l’ordinateur, mais aussi sur le sapin. Chaque année, vous pourrez ressortir ces boules de la boîte festive et vous remémorer avec joie les beaux moments.',
-    img: '/features1.jpg',
+    img: '/vid2.mp4',
+    type: 'video',
   },
   {
     id: 2,
@@ -16,6 +17,7 @@ const features = [
     description:
       'Chaque boule est unique ! Chacune contient une part de votre chaleur et de vos souvenirs heureux. Tout est fait pour que vous et vos proches soyez ravis de ce cadeau. Merci de votre confiance !',
     img: '/features2.jpg',
+    type: 'photo',
   },
   {
     id: 3,
@@ -24,6 +26,7 @@ const features = [
     description:
       'Les boules photo en ensembles paraissent encore plus festives et élégantes. Une idée parfaite pour offrir à vos proches, amis ou collègues.',
     img: '/features3.jpg',
+    type: 'photo',
   },
 ]
 
@@ -49,11 +52,22 @@ export default function ProductFeatures() {
             {/* Photo */}
             <div className="relative group">
               <div className="absolute -inset-2 bg-gradient-to-tr from-red-200 to-green-200 rounded-3xl blur opacity-30 group-hover:opacity-50 transition" />
-              <img
-                src={f.img}
-                alt={f.title}
-                className="relative w-full md:max-w-[500px] max-h-[380px] object-cover rounded-3xl shadow-xl transform group-hover:scale-105 transition duration-500"
-              />
+              {f.type === 'video' ? (
+                <video
+                  autoPlay
+                  playsInline
+                  loop
+                  muted
+                  className="relative w-full md:max-w-[500px] max-h-[380px] object-cover rounded-3xl shadow-xl transform group-hover:scale-105 transition duration-500"
+                  src={f.img}
+                ></video>
+              ) : (
+                <img
+                  src={f.img}
+                  alt={f.title}
+                  className="relative w-full md:max-w-[500px] max-h-[380px] object-cover rounded-3xl shadow-xl transform group-hover:scale-105 transition duration-500"
+                />
+              )}
             </div>
 
             {/* Texte */}

@@ -16,11 +16,11 @@ import { useCreateOrder } from '@/modules/orders/api/useCreateOrder.ts'
 
 export const OrderPage = () => {
   const navigate = useNavigate({ from: '/order' })
-  const { name, phone } = useSearch({ from: '/order/' })
+  const { name, email } = useSearch({ from: '/order/' })
   const { data: categories } = useCategories()
   const defaultValues = useMemo(
-    () => orderDefaultValues(phone, name, categories),
-    [name, phone, categories],
+    () => orderDefaultValues(email, name, categories),
+    [name, email, categories],
   )
   const { handleCreate, isPending } = useCreateOrder({
     onSuccess: (data) => {
@@ -29,6 +29,11 @@ export const OrderPage = () => {
   })
   const form = useAppForm({
     defaultValues,
+    validators: {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      onSubmit: orderSchema,
+    },
     onSubmit: async ({ value }) => {
       try {
         const parsed = orderSchema.parse(value)
@@ -38,7 +43,6 @@ export const OrderPage = () => {
       }
     },
   })
-
   const createNewItem = () => ({
     quantity: 1,
     characteristics:

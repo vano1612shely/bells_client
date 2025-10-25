@@ -4,7 +4,7 @@ import { withQueryConfig } from '@/shared/lib/withQueryConfig.ts'
 import { OrderApi } from '@/modules/orders/api/api.ts'
 
 export const useOrders = (
-  filters: { status?: string; phone?: string; page?: number; limit?: number },
+  filters: { status?: string; email?: string; page?: number; limit?: number },
   config?: UseQueryConfig,
 ) => {
   const { enabled, queryKey } = withQueryConfig(config)
