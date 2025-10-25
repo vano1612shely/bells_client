@@ -1,9 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
 import { toast } from 'sonner'
+import type { UseMutationConfig } from '@/shared/types/mutationConfig.ts'
 import { BackTemplatesApi } from '@/modules/back-templates/api/api.ts'
 
-export const useCreateBackTemplate = (config?: any) => {
+export const useCreateBackTemplate = (config?: UseMutationConfig) => {
   const queryClient = useQueryClient()
   const { mutate, isPending } = useMutation({
     mutationFn: BackTemplatesApi.createTemplate,
