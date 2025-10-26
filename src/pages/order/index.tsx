@@ -125,13 +125,15 @@ export const OrderPage = () => {
                     ))}
                   </div>
 
-                  <div className="flex justify-between items-center pt-4 border-t">
+                  <div className="flex justify-around items-center pt-4 border-t">
                     <Button
                       type="button"
                       variant="outline"
+                      className="flex flex-col items-center justify-center gap-2 rounded-full p-4 w-40 h-40 cursor-pointer"
                       onClick={() => arrayField.pushValue(createNewItem())}
                     >
-                      <Plus className="mr-2 h-4 w-4" /> Ajouter un produit
+                      <Plus className="!w-8 !h-8 text-gray-700" />
+                      <p className="text-xs">Ajouter un produit</p>
                     </Button>
                   </div>
                 </>
