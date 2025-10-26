@@ -46,17 +46,19 @@ export const PriceDisplay: FC<PriceDisplayProps> = ({ price }) => {
             </TooltipTrigger>
             <TooltipContent>
               <div className="flex flex-col gap-1">
-                <span>Знижка: {price.discount.toFixed(2)} €</span>
+                <span>Réduction : {price.discount.toFixed(2)} €</span>
                 <span>
-                  Відсоток знижки: {price.discountPercent.toFixed(0)}%
+                  Pourcentage de réduction : {price.discountPercent.toFixed(0)}%
                 </span>
                 {discounts.data?.length ? (
                   <div>
-                    <span className="font-semibold">Додаткові знижки:</span>
+                    <span className="font-semibold">
+                      Réductions supplémentaires :
+                    </span>
                     <ul className="list-disc list-inside text-sm">
                       {discounts.data.map((d) => (
                         <li key={d.id}>
-                          {d.count} шт → {d.discount} €
+                          {d.count} pcs → {d.discount} €
                         </li>
                       ))}
                     </ul>
@@ -70,7 +72,7 @@ export const PriceDisplay: FC<PriceDisplayProps> = ({ price }) => {
 
       {hasDiscount && (
         <span className="text-sm text-green-600">
-          Зекономлено {price.discount.toFixed(2)} €
+          Vous avez économisé {price.discount.toFixed(2)} €
         </span>
       )}
     </div>
