@@ -245,28 +245,38 @@ export const OrderPage = () => {
 
               {deliveryType === 'home' && (
                 <div className="grid grid-cols-1 gap-4">
-                  <form.AppField name="delivery.address.name">
-                    {(field) => <field.TextField label="Nom et prénom" />}
-                  </form.AppField>
-                  <form.AppField name="delivery.address.street">
-                    {(field) => <field.TextField label="Adresse" />}
-                  </form.AppField>
-                  <form.AppField name="delivery.address.additional">
-                    {(field) => (
-                      <field.TextField
-                        label="Informations supplémentaires"
-                        placeholder="Étage, bâtiment, appartement, etc."
-                      />
-                    )}
-                  </form.AppField>
+                  <div className="grid gap-2">
+                    <form.AppField name="delivery.address.name">
+                      {(field) => <field.TextField label="Nom et prénom" />}
+                    </form.AppField>
+                  </div>
+                  <div className="grid gap-2">
+                    <form.AppField name="delivery.address.street">
+                      {(field) => <field.TextField label="Adresse" />}
+                    </form.AppField>
+                  </div>
+                  <div className="grid gap-2">
+                    <form.AppField name="delivery.address.additional">
+                      {(field) => (
+                        <field.TextField
+                          label="Informations supplémentaires"
+                          placeholder="Étage, bâtiment, appartement, etc."
+                        />
+                      )}
+                    </form.AppField>
+                  </div>
 
                   <div className="grid grid-cols-2 gap-4">
-                    <form.AppField name="delivery.address.postalCode">
-                      {(field) => <field.TextField label="Code postal" />}
-                    </form.AppField>
-                    <form.AppField name="delivery.address.city">
-                      {(field) => <field.TextField label="Ville" />}
-                    </form.AppField>
+                    <div className="grid gap-2">
+                      <form.AppField name="delivery.address.postalCode">
+                        {(field) => <field.TextField label="Code postal" />}
+                      </form.AppField>
+                    </div>
+                    <div className="grid gap-2">
+                      <form.AppField name="delivery.address.city">
+                        {(field) => <field.TextField label="Ville" />}
+                      </form.AppField>
+                    </div>
                   </div>
 
                   <form.AppField name="delivery.address.phone">
