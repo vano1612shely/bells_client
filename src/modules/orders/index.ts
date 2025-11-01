@@ -7,4 +7,4 @@ export { StatusBadge } from './components/statusBadge'
 export { OrderDetailsModal } from './components/orderDetailsModal'
 
 export { orderSchema } from './models/create-order.schema'
-export type { OrderSchema } from './models/create-order.schema'
+export type { OrderSchema, RelayPoint } from './models/create-order.schema'

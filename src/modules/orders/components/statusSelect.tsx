@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { RefreshCw } from 'lucide-react'
 import { OrderStatus } from '@/modules/orders/types'
 import { StatusBadge, useUpdateStatus } from '@/modules/orders'
 import {
@@ -28,7 +27,6 @@ export const StatusSelect = ({
       <DropdownMenuTrigger asChild>
         <Button variant="outline" className="flex items-center gap-2">
           <StatusBadge status={currentStatus} lang={'ua'} />
-          <RefreshCw className="w-3 h-3" />
         </Button>
       </DropdownMenuTrigger>
 
@@ -41,7 +39,7 @@ export const StatusSelect = ({
               setIsOpen(false)
             }}
           >
-            <StatusBadge status={status} />
+            <StatusBadge status={status} lang={'ua'} />
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

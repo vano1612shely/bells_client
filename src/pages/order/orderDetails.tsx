@@ -107,7 +107,7 @@ export const OrderDetailsItem = ({
           </p>
           <div className="flex flex-wrap gap-2">
             {Object.entries(item.characteristics).map(([key, value]) => (
-              <p>
+              <p key={key}>
                 {key}: {value}
               </p>
             ))}
@@ -116,11 +116,11 @@ export const OrderDetailsItem = ({
         <FlipImage
           front={item.imagePath ? item.imagePath : item.originImagePath}
           back={
-            data
+            (data
               ? data.imagePath
               : item.backImagePath
                 ? item.backImagePath
-                : item.backOriginImagePath
+                : item.backOriginImagePath) as string
           }
         />
       </div>
@@ -217,6 +217,80 @@ export const OrderDetailPage = () => {
                 </div>
               </div>
             </div>
+          </Card>
+
+          {/* 🚚 Delivery Info */}
+          <Card className="p-6">
+            <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+              <Package className="h-5 w-5" />
+              Livraison
+            </h2>
+
+            {order.delivery.type === 'home' && (
+              <div className="space-y-2 text-sm">
+                <p>
+                  <span className="font-medium">Type:</span> À domicile
+                </p>
+                <p>
+                  <span className="font-medium">Nom:</span>{' '}
+                  {order.delivery.name}
+                </p>
+                <p>
+                  <span className="font-medium">Adresse:</span>{' '}
+                  {order.delivery.street}
+                </p>
+                {order.delivery.additional && (
+                  <p>
+                    <span className="font-medium">Complément:</span>{' '}
+                    {order.delivery.additional}
+                  </p>
+                )}
+                <p>
+                  <span className="font-medium">Code postal:</span>{' '}
+                  {order.delivery.postalCode}
+                </p>
+                <p>
+                  <span className="font-medium">Ville:</span>{' '}
+                  {order.delivery.city}
+                </p>
+                <p>
+                  <span className="font-medium">Téléphone:</span>{' '}
+                  {order.delivery.phone}
+                </p>
+              </div>
+            )}
+
+            {order.delivery.type === 'relay' && (
+              <div className="space-y-2 text-sm">
+                <p>
+                  <span className="font-medium">Type:</span> Point Relais
+                </p>
+                <p>
+                  <span className="font-medium">Téléphone:</span>{' '}
+                  {order.delivery.relayPhone}
+                </p>
+
+                {order.delivery.relayPoint && (
+                  <div className="mt-2 border rounded-md p-3 bg-muted/40">
+                    <p className="font-medium">
+                      {order.delivery.relayPoint.name}
+                    </p>
+                    <p>{order.delivery.relayPoint.address}</p>
+                    <p>
+                      {order.delivery.relayPoint.cp}{' '}
+                      {order.delivery.relayPoint.city},{' '}
+                      {order.delivery.relayPoint.Pays}
+                    </p>
+                    {order.delivery.relayPoint.lat && (
+                      <p className="text-muted-foreground text-xs mt-1">
+                        Lat: {order.delivery.relayPoint.lat}, Lon:{' '}
+                        {order.delivery.relayPoint.lon}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
           </Card>
 
           {/* Order Items */}

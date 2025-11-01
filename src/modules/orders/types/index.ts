@@ -1,11 +1,44 @@
+export interface RelayPoint {
+  id?: number
+  Num: string
+  LgAdr1: string
+  LgAdr2?: string
+  LgAdr3?: string
+  LgAdr4?: string
+  CP: string
+  Ville: string
+  Pays: string
+  lat?: number
+  lon?: number
+  name?: string
+  address?: string
+  cp?: number | string
+  city?: string
+}
+
+export interface Delivery {
+  id: string
+  type: 'home' | 'relay'
+  // для home
+  name?: string
+  street?: string
+  additional?: string
+  postalCode?: string
+  city?: string
+  phone?: string
+  // для relay
+  relayPhone?: string
+  relayPoint?: RelayPoint | null
+}
+
 export interface OrderItem {
   id: number
   quantity: number
   characteristics: Record<string, string>
   originImagePath: string
   imagePath: string | null
-  backImagePath: string
-  backOriginImagePath: string
+  backImagePath: string | null
+  backOriginImagePath: string | null
   backSideType: 'template' | 'custom'
   backTemplateId: string | null
 }
@@ -21,6 +54,7 @@ export interface Order {
   totalPriceWithDiscount: number
   totalQuantity: number
   items: Array<OrderItem>
+  delivery: Delivery // ✅ нове поле
   createdAt: string
   updatedAt: string
 }

@@ -82,7 +82,14 @@ export const OrderItemCard = ({
                     <Label>Photo pour la partie avant</Label>
 
                     {!field.state.value?.originImage ? (
-                      <UploadPhotoField field={field} />
+                      <>
+                        <UploadPhotoField field={field} />
+                        {field.state.meta.errors?.[0] && (
+                          <p className="text-destructive text-sm">
+                            {field.state.meta.errors[0].message}
+                          </p>
+                        )}
+                      </>
                     ) : (
                       <div className="space-y-2">
                         <BallPhotoEditor

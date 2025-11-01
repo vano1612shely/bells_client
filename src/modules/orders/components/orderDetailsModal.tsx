@@ -1,4 +1,4 @@
-import { Download, Eye } from 'lucide-react'
+import { Download, Eye, Home, MapPin, Phone } from 'lucide-react'
 import { useState } from 'react'
 import type { Order } from '@/modules/orders/types'
 import {
@@ -51,6 +51,15 @@ const ImageWithDownload = ({ src, alt }: { src: string; alt: string }) => {
 export const OrderDetailsModal = ({ order }: { order: Order }) => {
   const [open, setOpen] = useState(false)
 
+  const formatDate = (date: string) =>
+    new Date(date).toLocaleString('uk-UA', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>
@@ -81,15 +90,96 @@ export const OrderDetailsModal = ({ order }: { order: Order }) => {
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Статус</p>
-              <StatusBadge status={order.status} />
+              <StatusBadge status={order.status} lang={'ua'} />
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Дата створення</p>
-              <p className="font-medium">
-                {new Date(order.createdAt).toLocaleString('uk-UA')}
-              </p>
+              <p className="font-medium">{formatDate(order.createdAt)}</p>
             </div>
           </div>
+
+          <Separator />
+
+          {/* Інформація про доставку */}
+          <Card>
+            <CardContent className="pt-6 space-y-4">
+              <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
+                <MapPin className="h-5 w-5" />
+                Інформація про доставку
+              </h3>
+
+              {order.delivery.type === 'home' && (
+                <div className="space-y-1 text-sm">
+                  <p>
+                    <Home className="inline-block h-4 w-4 mr-1" />
+                    <span className="font-medium">Тип:</span> Доставка додому
+                  </p>
+                  <p>
+                    <span className="font-medium">Ім’я отримувача:</span>{' '}
+                    {order.delivery.name}
+                  </p>
+                  <p>
+                    <span className="font-medium">Адреса:</span>{' '}
+                    {order.delivery.street}
+                  </p>
+                  {order.delivery.additional && (
+                    <p>
+                      <span className="font-medium">Додатково:</span>{' '}
+                      {order.delivery.additional}
+                    </p>
+                  )}
+                  <p>
+                    <span className="font-medium">Поштовий індекс:</span>{' '}
+                    {order.delivery.postalCode}
+                  </p>
+                  <p>
+                    <span className="font-medium">Місто:</span>{' '}
+                    {order.delivery.city}
+                  </p>
+                  <p>
+                    <Phone className="inline-block h-4 w-4 mr-1" />
+                    <span className="font-medium">Телефон:</span>{' '}
+                    {order.delivery.phone}
+                  </p>
+                </div>
+              )}
+
+              {order.delivery.type === 'relay' && (
+                <div className="space-y-1 text-sm">
+                  <p>
+                    <MapPin className="inline-block h-4 w-4 mr-1" />
+                    <span className="font-medium">Тип:</span> Доставка у пункт
+                    видачі
+                  </p>
+                  <p>
+                    <Phone className="inline-block h-4 w-4 mr-1" />
+                    <span className="font-medium">Телефон:</span>{' '}
+                    {order.delivery.relayPhone}
+                  </p>
+
+                  {order.delivery.relayPoint && (
+                    <div className="mt-2 border rounded-md p-3 bg-muted/40">
+                      <p className="font-medium">
+                        {order.delivery.relayPoint.name}
+                      </p>
+                      <p>{order.delivery.relayPoint.address}</p>
+                      <p>
+                        {order.delivery.relayPoint.cp}{' '}
+                        {order.delivery.relayPoint.city},{' '}
+                        {order.delivery.relayPoint.Pays}
+                      </p>
+                      {order.delivery.relayPoint.lat && (
+                        <p className="text-muted-foreground text-xs mt-1">
+                          Координати: {order.delivery.relayPoint.lat.toFixed(5)}
+                          , {order.delivery.relayPoint.lon?.toFixed(5)}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
           <Separator />
 
@@ -153,7 +243,7 @@ export const OrderDetailsModal = ({ order }: { order: Order }) => {
                 return (
                   <Card key={item.id}>
                     <CardContent className="pt-6 space-y-4">
-                      <div className="flex gap-4">
+                      <div className="flex gap-4 flex-wrap">
                         {/* Передня частина */}
                         <div className="flex flex-col gap-2">
                           <p className="text-sm font-medium text-center">

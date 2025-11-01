@@ -8,24 +8,26 @@ export const OrderApi = {
   createOrder: (data: OrderSchema) => {
     const formData = new FormData()
 
+    // 🔹 Основні поля замовлення
     formData.append('name', data.name)
     formData.append('email', data.email)
 
+    // 🔹 Товари
     data.items.forEach((item, index) => {
       formData.append(`items[${index}][quantity]`, item.quantity.toString())
       formData.append(
         `items[${index}][characteristics]`,
-        JSON.stringify(item.characteristics),
+        JSON.stringify(item.characteristics || {}),
       )
 
-      // Front side
-      if (item.photo?.originImage) {
+      if (item.photo.originImage) {
         formData.append(`originImage[${index}]`, item.photo.originImage)
       }
-      if (item.photo?.image) {
+      if (item.photo.image) {
         formData.append(`image[${index}]`, item.photo.image)
       }
 
+      // 🔙 Back side
       if (item.backTemplateId) {
         formData.append(`items[${index}][backSideType]`, 'template')
         formData.append(`items[${index}][backTemplateId]`, item.backTemplateId)
@@ -43,12 +45,39 @@ export const OrderApi = {
       }
     })
 
+    // 🔹 Доставка
+    formData.append('delivery[type]', data.delivery.type)
+
+    if (data.delivery.type === 'home' && data.delivery.address) {
+      const address = data.delivery.address
+      formData.append('delivery[address][name]', address.name)
+      formData.append('delivery[address][street]', address.street)
+      if (address.additional)
+        formData.append('delivery[address][additional]', address.additional)
+      formData.append('delivery[address][postalCode]', address.postalCode)
+      formData.append('delivery[address][city]', address.city)
+      formData.append('delivery[address][phone]', address.phone)
+    }
+
+    if (data.delivery.type === 'relay' && data.delivery.relay) {
+      const relay = data.delivery.relay
+      formData.append('delivery[relay][phone]', relay.phone)
+
+      if (relay.point) {
+        const p = relay.point
+        // Важливо: бек очікує JSONB relayPoint
+        formData.append('delivery[relay][point]', JSON.stringify(p))
+      }
+    }
+
+    // 🔹 Відправка
     return apiClient.post({
       url: ORDERS_URLS.orders,
       payload: formData,
       contentType: 'multipart/form-data',
     })
   },
+
   getOrders: (filters: {
     page?: number
     limit?: number
