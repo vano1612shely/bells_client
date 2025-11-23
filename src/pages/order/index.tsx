@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+﻿import { motion } from 'framer-motion'
 import { ArrowLeft, Package, Plus, Truck } from 'lucide-react'
 import { useNavigate, useSearch } from '@tanstack/react-router'
 import { useStore } from '@tanstack/react-form'
@@ -22,7 +22,7 @@ export const OrderPage = () => {
   const [isModalOpen, setModalOpen] = useState(false)
   const [step, setStep] = useState<1 | 2>(1)
 
-  // NEW: локальний стейт для чекбокса
+  // NEW: Р»РѕРєР°Р»СЊРЅРёР№ СЃС‚РµР№С‚ РґР»СЏ С‡РµРєР±РѕРєСЃР°
   const [hasAcceptedTerms, setHasAcceptedTerms] = useState(false)
 
   const defaultValues = useMemo(
@@ -35,7 +35,6 @@ export const OrderPage = () => {
       navigate({ to: `/order/${data.id}` })
     },
   })
-
   const form = useAppForm({
     defaultValues,
     validators: {
@@ -50,7 +49,7 @@ export const OrderPage = () => {
       }
     },
   })
-
+  console.log(form.state.errors)
   const createNewItem = () => ({
     quantity: 1,
     characteristics:
@@ -109,7 +108,7 @@ export const OrderPage = () => {
 
       <Separator />
 
-      {/* STEP 1 без form */}
+      {/* STEP 1 Р±РµР· form */}
       {step === 1 && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <motion.div
@@ -201,7 +200,7 @@ export const OrderPage = () => {
         </div>
       )}
 
-      {/* STEP 2 — лише тут форма з onSubmit */}
+      {/* STEP 2 вЂ” Р»РёС€Рµ С‚СѓС‚ С„РѕСЂРјР° Р· onSubmit */}
       {step === 2 && (
         <form
           onSubmit={(e) => {
@@ -230,6 +229,14 @@ export const OrderPage = () => {
                   onClick={() => {
                     form.setFieldValue('delivery.type', 'home')
                     form.setFieldValue('delivery.relay', undefined)
+                    form.setFieldValue('delivery.address', {
+                      name: '',
+                      street: '',
+                      additional: '',
+                      postalCode: '',
+                      city: '',
+                      phone: '',
+                    })
                   }}
                 >
                   À domicile
@@ -240,6 +247,10 @@ export const OrderPage = () => {
                   onClick={() => {
                     form.setFieldValue('delivery.type', 'relay')
                     form.setFieldValue('delivery.address', undefined)
+                    form.setFieldValue('delivery.relay', {
+                      phone: '',
+                      point: null,
+                    })
                   }}
                 >
                   Point Relais
@@ -358,7 +369,7 @@ export const OrderPage = () => {
                 </div>
               </div>
 
-              {/* NEW: чекбокс з посиланням на правила */}
+              {/* NEW: С‡РµРєР±РѕРєСЃ Р· РїРѕСЃРёР»Р°РЅРЅСЏРј РЅР° РїСЂР°РІРёР»Р° */}
               <div className="mt-4 flex items-start gap-2 text-sm">
                 <input
                   id="accept-terms"
@@ -369,7 +380,7 @@ export const OrderPage = () => {
                   required
                 />
                 <label htmlFor="accept-terms" className="text-muted-foreground">
-                  J&apos;ai lu et j&apos;accepte les{' '}
+                  J`ai lu et j`accepte les{' '}
                   <a
                     href="/conditions-generales-de-vente"
                     className="underline"
@@ -386,7 +397,7 @@ export const OrderPage = () => {
                 size="lg"
                 type="submit"
                 isLoading={isPending}
-                disabled={!hasAcceptedTerms || isPending} // NEW: блокуємо, поки не відмічений чекбокс
+                disabled={!hasAcceptedTerms || isPending} // NEW: Р±Р»РѕРєСѓС”РјРѕ, РїРѕРєРё РЅРµ РІС–РґРјС–С‡РµРЅРёР№ С‡РµРєР±РѕРєСЃ
               >
                 Valider et payer
               </Button>

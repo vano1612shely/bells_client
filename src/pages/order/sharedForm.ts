@@ -29,10 +29,7 @@ export const emptyOrderDefaultValues: OrderSchema = {
       city: '',
       phone: '',
     },
-    relay: {
-      phone: '',
-      point: null,
-    },
+    relay: undefined,
   },
 }
 export const orderDefaultValues = (
@@ -76,9 +73,6 @@ export const orderDefaultValues = (
       city: '',
       phone: '',
     },
-    relay: {
-      phone: '',
-      point: null,
-    },
+    relay: undefined,
   },
 })

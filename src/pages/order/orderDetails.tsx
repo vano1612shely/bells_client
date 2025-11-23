@@ -423,6 +423,49 @@ export const OrderDetailPage = () => {
                       toast.error('Erreur PayPal, veuillez reessayer')
                     }}
                   />
+                  <div className="mt-3">
+                    <PayPalButtons
+                      style={{
+                        layout: 'vertical',
+                        shape: 'pill',
+                        color: 'white',
+                      }}
+                      disabled={isProcessingPayment || isPaid}
+                      forceReRender={[
+                        order.totalPriceWithDiscount,
+                        paypalCurrency,
+                      ]}
+                      fundingSource="card"
+                      createOrder={async () => {
+                        try {
+                          return await handleCreatePaypalOrder()
+                        } catch (error) {
+                          console.error(error)
+                          toast.error('Impossible de creer le paiement (carte)')
+                          throw error
+                        }
+                      }}
+                      onApprove={async (data) => {
+                        if (!data.orderID) {
+                          toast.error('Identifiant PayPal manquant')
+                          return
+                        }
+                        try {
+                          await handleCapturePayment(data.orderID)
+                        } catch (error) {
+                          console.error(error)
+                          toast.error(
+                            'Erreur lors de la confirmation du paiement',
+                          )
+                        }
+                      }}
+                      onCancel={() => toast.info('Paiement annule')}
+                      onError={(err) => {
+                        console.error(err)
+                        toast.error('Erreur de paiement, veuillez reessayer')
+                      }}
+                    />
+                  </div>
                   {isProcessingPayment && (
                     <div className="flex items-center gap-2 text-sm text-muted-foreground mt-2">
                       <Loader2 className="h-4 w-4 animate-spin" />
