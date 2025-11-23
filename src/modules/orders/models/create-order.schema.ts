@@ -7,14 +7,14 @@ export const relayPointSchema = z.object({
   LgAdr2: z.string().optional().nullable(),
   LgAdr3: z.string().optional().nullable(),
   LgAdr4: z.string().optional().nullable(),
-  CP: z.string(),
+  CP: z.string().or(z.number()),
   Ville: z.string(),
   Pays: z.string(),
   lat: z.number().optional(),
   lon: z.number().optional(),
   name: z.string().optional(),
   address: z.string().optional(),
-  cp: z.number().optional(),
+  cp: z.number().or(z.string()).optional(),
   city: z.string().optional(),
 })
 

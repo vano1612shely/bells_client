@@ -48,6 +48,82 @@ const ImageWithDownload = ({ src, alt }: { src: string; alt: string }) => {
   )
 }
 
+const OrderItemDetailsCard = ({ item }: { item: Order['items'][number] }) => {
+  const { data: backTemplate } = useBackTemplate(item.backTemplateId || '', {
+    enabled: !!item.backTemplateId && item.backSideType === 'template',
+  })
+
+  return (
+    <Card>
+      <CardContent className="pt-6 space-y-4">
+        <div className="flex gap-4 flex-wrap">
+          <div className="flex flex-col gap-2">
+            <p className="text-sm font-medium text-center">Передня частина</p>
+            <div className="flex gap-2">
+              {item.originImagePath && (
+                <ImageWithDownload
+                  src={getFileLink(item.originImagePath)}
+                  alt=""
+                />
+              )}
+              {item.imagePath && (
+                <ImageWithDownload src={getFileLink(item.imagePath)} alt="" />
+              )}
+            </div>
+          </div>
+          <div className="flex flex-col gap-2">
+            <p className="text-sm font-medium text-center">Задня частина</p>
+            {item.backSideType === 'custom' && (
+              <div className="flex gap-2">
+                {item.backOriginImagePath && (
+                  <ImageWithDownload
+                    src={getFileLink(item.backOriginImagePath)}
+                    alt=""
+                  />
+                )}
+                {item.backImagePath && (
+                  <ImageWithDownload
+                    src={getFileLink(item.backImagePath)}
+                    alt=""
+                  />
+                )}
+              </div>
+            )}
+
+            {item.backSideType === 'template' && (
+              <div className="flex flex-col items-center">
+                {backTemplate?.imagePath && (
+                  <img
+                    src={getFileLink(backTemplate.imagePath)}
+                    alt={backTemplate.title}
+                    className="w-24 h-24 object-cover rounded-md shadow"
+                  />
+                )}
+                <p className="text-xs text-muted-foreground mt-1">
+                  {backTemplate?.title || 'Шаблон за замовчуванням'}
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {Object.keys(item.characteristics).length > 0 && (
+          <div className="text-sm">
+            <p className="font-medium mb-1">Характеристики:</p>
+            <div className="grid grid-cols-2 gap-2">
+              {Object.entries(item.characteristics).map(([key, value]) => (
+                <div key={key} className="text-muted-foreground">
+                  <span className="font-medium">{key}:</span> {value}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  )
+}
+
 export const OrderDetailsModal = ({ order }: { order: Order }) => {
   const [open, setOpen] = useState(false)
 
@@ -231,103 +307,9 @@ export const OrderDetailsModal = ({ order }: { order: Order }) => {
               Товари ({order.items.length || 0})
             </h3>
             <div className="space-y-4">
-              {order.items.map((item) => {
-                const { data: backTemplate } = useBackTemplate(
-                  item.backTemplateId || '',
-                  {
-                    enabled:
-                      !!item.backTemplateId && item.backSideType === 'template',
-                  },
-                )
-
-                return (
-                  <Card key={item.id}>
-                    <CardContent className="pt-6 space-y-4">
-                      <div className="flex gap-4 flex-wrap">
-                        {/* Передня частина */}
-                        <div className="flex flex-col gap-2">
-                          <p className="text-sm font-medium text-center">
-                            Передня частина
-                          </p>
-                          <div className="flex gap-2">
-                            {item.originImagePath && (
-                              <ImageWithDownload
-                                src={getFileLink(item.originImagePath)}
-                                alt="Оригінал передньої"
-                              />
-                            )}
-                            {item.imagePath && (
-                              <ImageWithDownload
-                                src={getFileLink(item.imagePath)}
-                                alt="Оброблена передня"
-                              />
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Задня частина */}
-                        <div className="flex flex-col gap-2">
-                          <p className="text-sm font-medium text-center">
-                            Задня частина
-                          </p>
-                          {item.backSideType === 'custom' && (
-                            <div className="flex gap-2">
-                              {item.backOriginImagePath && (
-                                <ImageWithDownload
-                                  src={getFileLink(item.backOriginImagePath)}
-                                  alt="Оригінал задньої"
-                                />
-                              )}
-                              {item.backImagePath && (
-                                <ImageWithDownload
-                                  src={getFileLink(item.backImagePath)}
-                                  alt="Оброблена задня"
-                                />
-                              )}
-                            </div>
-                          )}
-
-                          {item.backSideType === 'template' && (
-                            <div className="flex flex-col items-center">
-                              {backTemplate?.imagePath && (
-                                <img
-                                  src={getFileLink(backTemplate.imagePath)}
-                                  alt={backTemplate.title}
-                                  className="w-24 h-24 object-cover rounded-md shadow"
-                                />
-                              )}
-                              <p className="text-xs text-muted-foreground mt-1">
-                                {backTemplate?.title ||
-                                  'Шаблон за замовчуванням'}
-                              </p>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Характеристики */}
-                      {Object.keys(item.characteristics).length > 0 && (
-                        <div className="text-sm">
-                          <p className="font-medium mb-1">Характеристики:</p>
-                          <div className="grid grid-cols-2 gap-2">
-                            {Object.entries(item.characteristics).map(
-                              ([key, value]) => (
-                                <div
-                                  key={key}
-                                  className="text-muted-foreground"
-                                >
-                                  <span className="font-medium">{key}:</span>{' '}
-                                  {value}
-                                </div>
-                              ),
-                            )}
-                          </div>
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
-                )
-              })}
+              {order.items.map((item) => (
+                <OrderItemDetailsCard key={item.id} item={item} />
+              ))}
             </div>
           </div>
         </div>

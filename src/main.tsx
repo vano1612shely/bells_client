@@ -9,6 +9,7 @@ import './styles.css'
 import { Toaster } from '@/shared/components/ui/sonner.tsx'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AuthProvider } from '@/shared/providers/authProvider.tsx'
+import { PaypalProvider } from '@/shared/providers/paypalProvider.tsx'
 
 // Create a new router instance
 const router = createRouter({
@@ -35,8 +36,10 @@ if (rootElement && !rootElement.innerHTML) {
     <StrictMode>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <Toaster />
-          <RouterProvider router={router} />
+          <PaypalProvider>
+            <Toaster />
+            <RouterProvider router={router} />
+          </PaypalProvider>
         </AuthProvider>
       </QueryClientProvider>
     </StrictMode>,

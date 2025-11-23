@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ConditionsGeneralesDeVenteRouteImport } from './routes/conditions-generales-de-vente'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as OrderIndexRouteImport } from './routes/order/index'
@@ -19,6 +20,12 @@ import { Route as AdminDashboardIndexRouteImport } from './routes/admin/dashboar
 import { Route as AdminDashboardProductsRouteImport } from './routes/admin/dashboard/products'
 import { Route as AdminDashboardDiscountRouteImport } from './routes/admin/dashboard/discount'
 
+const ConditionsGeneralesDeVenteRoute =
+  ConditionsGeneralesDeVenteRouteImport.update({
+    id: '/conditions-generales-de-vente',
+    path: '/conditions-generales-de-vente',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -68,6 +75,7 @@ const AdminDashboardDiscountRoute = AdminDashboardDiscountRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
+  '/conditions-generales-de-vente': typeof ConditionsGeneralesDeVenteRoute
   '/admin/dashboard': typeof AdminDashboardRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
   '/order/$orderId': typeof OrderOrderIdRoute
@@ -79,6 +87,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
+  '/conditions-generales-de-vente': typeof ConditionsGeneralesDeVenteRoute
   '/admin/login': typeof AdminLoginRoute
   '/order/$orderId': typeof OrderOrderIdRoute
   '/order': typeof OrderIndexRoute
@@ -90,6 +99,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
+  '/conditions-generales-de-vente': typeof ConditionsGeneralesDeVenteRoute
   '/admin/dashboard': typeof AdminDashboardRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
   '/order/$orderId': typeof OrderOrderIdRoute
@@ -103,6 +113,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
+    | '/conditions-generales-de-vente'
     | '/admin/dashboard'
     | '/admin/login'
     | '/order/$orderId'
@@ -114,6 +125,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/admin'
+    | '/conditions-generales-de-vente'
     | '/admin/login'
     | '/order/$orderId'
     | '/order'
@@ -124,6 +136,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/admin'
+    | '/conditions-generales-de-vente'
     | '/admin/dashboard'
     | '/admin/login'
     | '/order/$orderId'
@@ -136,12 +149,20 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRouteWithChildren
+  ConditionsGeneralesDeVenteRoute: typeof ConditionsGeneralesDeVenteRoute
   OrderOrderIdRoute: typeof OrderOrderIdRoute
   OrderIndexRoute: typeof OrderIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/conditions-generales-de-vente': {
+      id: '/conditions-generales-de-vente'
+      path: '/conditions-generales-de-vente'
+      fullPath: '/conditions-generales-de-vente'
+      preLoaderRoute: typeof ConditionsGeneralesDeVenteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin': {
       id: '/admin'
       path: '/admin'
@@ -239,6 +260,7 @@ const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
+  ConditionsGeneralesDeVenteRoute: ConditionsGeneralesDeVenteRoute,
   OrderOrderIdRoute: OrderOrderIdRoute,
   OrderIndexRoute: OrderIndexRoute,
 }

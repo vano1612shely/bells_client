@@ -15,8 +15,8 @@ export default function AdminOrdersPage() {
   const [emailFilter, setEmailFilter] = useState('')
 
   const { data, isLoading, error } = useOrders({
-    email: emailFilter,
-    status: statusFilter,
+    ...(emailFilter ? { email: emailFilter } : {}),
+    ...(statusFilter ? { status: statusFilter } : {}),
     limit,
     page,
   })

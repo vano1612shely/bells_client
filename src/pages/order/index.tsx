@@ -22,6 +22,9 @@ export const OrderPage = () => {
   const [isModalOpen, setModalOpen] = useState(false)
   const [step, setStep] = useState<1 | 2>(1)
 
+  // NEW: локальний стейт для чекбокса
+  const [hasAcceptedTerms, setHasAcceptedTerms] = useState(false)
+
   const defaultValues = useMemo(
     () => orderDefaultValues(email, name, categories),
     [name, email, categories],
@@ -355,11 +358,35 @@ export const OrderPage = () => {
                 </div>
               </div>
 
+              {/* NEW: чекбокс з посиланням на правила */}
+              <div className="mt-4 flex items-start gap-2 text-sm">
+                <input
+                  id="accept-terms"
+                  type="checkbox"
+                  className="mt-1 h-4 w-4 rounded border-gray-300"
+                  checked={hasAcceptedTerms}
+                  onChange={(e) => setHasAcceptedTerms(e.target.checked)}
+                  required
+                />
+                <label htmlFor="accept-terms" className="text-muted-foreground">
+                  J&apos;ai lu et j&apos;accepte les{' '}
+                  <a
+                    href="/conditions-generales-de-vente"
+                    className="underline"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Conditions Générales de Vente
+                  </a>
+                </label>
+              </div>
+
               <Button
                 className="w-full mt-6"
                 size="lg"
                 type="submit"
                 isLoading={isPending}
+                disabled={!hasAcceptedTerms || isPending} // NEW: блокуємо, поки не відмічений чекбокс
               >
                 Valider et payer
               </Button>

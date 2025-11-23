@@ -1,9 +1,13 @@
 import { motion } from 'framer-motion'
-import { ArrowLeft, CheckCircle, Package, Phone, User } from 'lucide-react'
+import { ArrowLeft, Loader2, Package, Phone, User } from 'lucide-react'
 import { useNavigate, useParams } from '@tanstack/react-router'
 import { useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+import { PayPalButtons } from '@paypal/react-paypal-js'
+import { toast } from 'sonner'
 import type { OrderItem } from '@/modules/orders/types'
 import { StatusBadge, useOrder } from '@/modules/orders'
+import { useCapturePaypalOrder, useCreatePaypalOrder } from '@/modules/payments'
 import { Button } from '@/shared/components/ui/button'
 import { Card } from '@/shared/components/ui/card'
 import { Separator } from '@/shared/components/ui/separator'
@@ -100,7 +104,7 @@ export const OrderDetailsItem = ({
         <h3 className="font-semibold">Produit #{index + 1}</h3>
         <Badge variant="secondary">Quantité : {item.quantity}</Badge>
       </div>
-      <div className="flex justify-between items-start gap-4">
+      <div className="flex justify-between flex-wrap items-start gap-4">
         <div className="space-y-2">
           <p className="text-sm font-medium text-muted-foreground">
             Caractéristiques :
@@ -131,7 +135,19 @@ export const OrderDetailsItem = ({
 export const OrderDetailPage = () => {
   const { orderId } = useParams({ from: '/order/$orderId' })
   const navigate = useNavigate()
-  const { data: order, isLoading } = useOrder(orderId)
+  const queryClient = useQueryClient()
+  const { data: order, isLoading, refetch } = useOrder(orderId)
+  const { createPaypalOrder, isCreatingPaypalOrder } = useCreatePaypalOrder()
+  const { capturePaypalOrder, isCapturingPaypalOrder } = useCapturePaypalOrder({
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ['orders', orderId],
+      })
+      await refetch()
+      toast.success('Paiement PayPal réussi')
+    },
+  })
+  const isProcessingPayment = isCreatingPaypalOrder || isCapturingPaypalOrder
   if (isLoading) {
     return (
       <div className="container mx-auto py-10 space-y-6">
@@ -145,10 +161,23 @@ export const OrderDetailPage = () => {
     return (
       <div className="container mx-auto py-10">
         <Card className="p-6 text-center">
-          <p className="text-muted-foreground">Замовлення не знайдено</p>
+          <p className="text-muted-foreground">Commande introuvable</p>
         </Card>
       </div>
     )
+  }
+
+  const paypalCurrency = import.meta.env.VITE_PAYPAL_CURRENCY || 'EUR'
+  const hasPaypalClient = Boolean(import.meta.env.VITE_PAYPAL_CLIENT_ID)
+  const isPaid = order.status === 'PAID'
+
+  const handleCreatePaypalOrder = async () => {
+    const created = await createPaypalOrder({ orderId: order.id })
+    return created.paypalOrderId
+  }
+
+  const handleCapturePayment = async (paypalOrderId: string) => {
+    await capturePaypalOrder({ paypalOrderId })
   }
 
   const formatDate = (date: string) => {
@@ -353,17 +382,69 @@ export const OrderDetailPage = () => {
               </div>
             </div>
 
-            <div className="mt-6 p-4 bg-muted rounded-lg">
-              <div className="flex items-start gap-3">
-                <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
-                <div className="text-sm">
-                  <p className="font-medium">Commande acceptée</p>
-                  <p className="text-muted-foreground mt-1">
-                    Nous vous contacterons sous peu
-                  </p>
+            {!isPaid && hasPaypalClient && (
+              <div className="mt-6 space-y-3">
+                <h3 className="text-sm font-semibold">Payer avec PayPal</h3>
+                <div className="rounded-lg border p-3 bg-muted/50">
+                  <PayPalButtons
+                    style={{ layout: 'vertical', shape: 'pill' }}
+                    disabled={isProcessingPayment || isPaid}
+                    forceReRender={[
+                      order.totalPriceWithDiscount,
+                      paypalCurrency,
+                    ]}
+                    fundingSource="paypal"
+                    createOrder={async () => {
+                      try {
+                        return await handleCreatePaypalOrder()
+                      } catch (error) {
+                        console.error(error)
+                        toast.error('Impossible de creer le paiement PayPal')
+                        throw error
+                      }
+                    }}
+                    onApprove={async (data) => {
+                      if (!data.orderID) {
+                        toast.error('Identifiant PayPal manquant')
+                        return
+                      }
+                      try {
+                        await handleCapturePayment(data.orderID)
+                      } catch (error) {
+                        console.error(error)
+                        toast.error(
+                          'Erreur lors de la confirmation du paiement',
+                        )
+                      }
+                    }}
+                    onCancel={() => toast.info('Paiement PayPal annule')}
+                    onError={(err) => {
+                      console.error(err)
+                      toast.error('Erreur PayPal, veuillez reessayer')
+                    }}
+                  />
+                  {isProcessingPayment && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground mt-2">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <span>Traitement du paiement...</span>
+                    </div>
+                  )}
                 </div>
               </div>
-            </div>
+            )}
+
+            {!hasPaypalClient && !isPaid && (
+              <div className="mt-4 text-sm text-muted-foreground">
+                PayPal n'est pas configur� sur le client. Ajoutez la variable
+                VITE_PAYPAL_CLIENT_ID pour activer le paiement.
+              </div>
+            )}
+
+            {isPaid && (
+              <div className="mt-6 p-3 rounded-lg bg-green-50 border border-green-200 text-green-700">
+                Paiement confirme via PayPal.
+              </div>
+            )}
           </Card>
         </div>
       </div>

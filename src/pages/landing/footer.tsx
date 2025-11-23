@@ -1,4 +1,4 @@
-import { MapPin, Phone, Timer, User } from 'lucide-react'
+import { Mail, Timer, User } from 'lucide-react'
 
 export const LandingFooter = () => {
   return (
@@ -10,20 +10,16 @@ export const LandingFooter = () => {
             Contacts
           </h3>
           <p className="flex items-center gap-2">
-            <MapPin className="text-green-400" size={18} />
-            Lyon, Rue de la République 28
-          </p>
-          <p className="flex items-center gap-2">
             <User className="text-green-400" size={18} />
             VRE DECO
           </p>
           <p className="flex items-center gap-2">
-            <Phone className="text-green-400" size={18} />
+            <Mail className="text-green-400" size={18} />
             <a
-              href="tel:+3363185128"
+              href="mailto:support@vre-deco.com"
               className="hover:text-green-300 transition"
             >
-              +33&nbsp;6&nbsp;31&nbsp;85&nbsp;12&nbsp;8
+              support@vre-deco.com
             </a>
           </p>
           <p className="flex items-center gap-2">
