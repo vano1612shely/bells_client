@@ -1,5 +1,5 @@
-import { apiClient } from '@/shared/api'
 import { PAYMENTS_URLS } from './routes.ts'
+import { apiClient } from '@/shared/api'
 
 export const PaymentsApi = {
   createOrder: ({ orderId }: { orderId: string }) =>
