@@ -1,45 +1,46 @@
+import { Pencil } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { Plus } from 'lucide-react'
-import type { CreateBackTemplateInput } from '@/modules/back-templates/models/createBackTemplate.schema.ts'
-import { useCreateBackTemplate } from '@/modules/back-templates/api/useCreateBackTemplate.ts'
-import { useAppForm } from '@/shared/hooks/form.ts'
-import { createBackTemplateSchema } from '@/modules/back-templates/models/createBackTemplate.schema.ts'
+import type {
+  BackTemplate,
+  CreateBackTemplateInput,
+} from '@/modules/back-templates'
+import { useUpdateBackTemplate } from '@/modules/back-templates/api/useUpdateBackTemplate'
+import { createBackTemplateSchema } from '@/modules/back-templates'
+import { useAppForm } from '@/shared/hooks/form'
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTrigger,
-} from '@/shared/components/ui/dialog.tsx'
-import { Button } from '@/shared/components/ui/button.tsx'
+} from '@/shared/components/ui/dialog'
+import { Button } from '@/shared/components/ui/button'
 
-export const CreateBackTemplate = () => {
+export const EditBackTemplate = ({ template }: { template: BackTemplate }) => {
   const [isOpen, setIsOpen] = useState(false)
-  const [imageFile, setImageFile] = useState<File | undefined>(undefined)
-  const [thumbnailFile, setThumbnailFile] = useState<File | undefined>(
-    undefined,
-  )
+  const [imageFile, setImageFile] = useState<File | undefined>()
+  const [thumbnailFile, setThumbnailFile] = useState<File | undefined>()
 
-  const { handleCreate, isPending } = useCreateBackTemplate({
-    onSuccess: () => {
-      setIsOpen(false)
-    },
+  const { handleUpdate, isPending } = useUpdateBackTemplate({
+    onSuccess: () => setIsOpen(false),
   })
 
-  // Припускаємо використання вашої form системи
   const form = useAppForm({
     defaultValues: {
-      title: '',
-      description: '',
+      title: template.title,
+      description: template.description || '',
     } as CreateBackTemplateInput,
     validators: {
       onSubmit: createBackTemplateSchema,
     },
     onSubmit: ({ value }) => {
-      handleCreate({
-        ...value,
-        image: imageFile,
-        thumbnail: thumbnailFile,
+      handleUpdate({
+        id: template.id,
+        data: {
+          ...value,
+          image: imageFile,
+          thumbnail: thumbnailFile,
+        },
       })
     },
   })
@@ -47,16 +48,23 @@ export const CreateBackTemplate = () => {
   useEffect(() => {
     if (isOpen) {
       form.reset()
+      form.setFieldValue('title', template.title)
+      form.setFieldValue('description', template.description || '')
       setImageFile(undefined)
       setThumbnailFile(undefined)
     }
-  }, [isOpen])
+  }, [isOpen, template.title, template.description, form])
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className="flex gap-2 items-center">
-          Створити шаблон <Plus />
+        <Button
+          size="sm"
+          variant="secondary"
+          className="flex items-center gap-1"
+        >
+          <Pencil size={16} />
+          Редагувати
         </Button>
       </DialogTrigger>
       <DialogContent>
@@ -67,7 +75,7 @@ export const CreateBackTemplate = () => {
             void form.handleSubmit()
           }}
         >
-          <DialogHeader>Створення шаблону задньої частини</DialogHeader>
+          <DialogHeader>Редагування заднього шаблону</DialogHeader>
           <div className="flex flex-col gap-3 mt-4 mb-4">
             <form.AppField
               name="title"
@@ -110,7 +118,7 @@ export const CreateBackTemplate = () => {
           </div>
           <DialogFooter>
             <Button isLoading={isPending} type="submit">
-              Створити
+              Зберегти
             </Button>
           </DialogFooter>
         </form>

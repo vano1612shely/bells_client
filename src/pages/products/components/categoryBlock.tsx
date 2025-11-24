@@ -11,6 +11,9 @@ import { getFileLink } from '@/shared/api/utils.tsx'
 import {
   CreateOption,
   DeleteCategory,
+  DeleteOption,
+  EditCategory,
+  EditOption,
   OptionCard,
   useOptions,
 } from '@/modules/characteristics'
@@ -31,6 +34,7 @@ export const CategoryBlock = ({ item }: { item: Category }) => {
           {item.title}
         </CardTitle>
         <div className="flex gap-2 items-center">
+          <EditCategory category={item} />
           <CreateOption categoryId={item.id} />
           <DeleteCategory id={item.id} />
         </div>
@@ -43,8 +47,19 @@ export const CategoryBlock = ({ item }: { item: Category }) => {
             </div>
           )}
           {data &&
-            data.map((item, index) => {
-              return <OptionCard option={item} key={index} />
+            data.map((item) => {
+              return (
+                <OptionCard
+                  option={item}
+                  key={item.id}
+                  actions={
+                    <>
+                      <EditOption option={item} />
+                      <DeleteOption optionId={item.id} />
+                    </>
+                  }
+                />
+              )
             })}
         </div>
       </CardContent>

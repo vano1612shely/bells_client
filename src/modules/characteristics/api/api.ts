@@ -34,7 +34,7 @@ export const CharacteristicsApi = {
     })
   },
 
-  updateCategory: (id: number, data: CreateCategoryInput) =>
+  updateCategory: (id: number | string, data: CreateCategoryInput | FormData) =>
     apiClient.put<Category>({
       url: CHARACTERISTICS_URL.category(id),
       payload: data,
@@ -74,16 +74,16 @@ export const CharacteristicsApi = {
     })
   },
 
-  updateOption: (categoryId: number, optionId: number, data: any) =>
+  updateOption: (optionId: number | string, data: any) =>
     apiClient.put<Option>({
-      url: CHARACTERISTICS_URL.option(categoryId, optionId),
+      url: CHARACTERISTICS_URL.option(optionId),
       payload: data,
       contentType:
         data instanceof FormData ? 'multipart/form-data' : 'application/json',
     }),
 
-  deleteOption: (categoryId: number, optionId: number) =>
+  deleteOption: (optionId: number | string) =>
     apiClient.delete({
-      url: CHARACTERISTICS_URL.option(categoryId, optionId),
+      url: CHARACTERISTICS_URL.option(optionId),
     }),
 }

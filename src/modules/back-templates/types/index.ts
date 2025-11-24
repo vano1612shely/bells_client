@@ -4,6 +4,8 @@ export interface BackTemplate {
   description?: string
   imagePath: string
   thumbnailPath?: string
+  isActive?: boolean
+  sortOrder?: number
   createdAt: string
   updatedAt: string
 }

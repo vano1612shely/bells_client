@@ -22,10 +22,6 @@ export const BackTemplatesApi = {
     const formData = new FormData()
     formData.append('title', data.title)
     if (data.description) formData.append('description', data.description)
-    if (data.isActive !== undefined)
-      formData.append('isActive', String(data.isActive))
-    if (data.sortOrder !== undefined)
-      formData.append('sortOrder', String(data.sortOrder))
     if (data.image) formData.append('image', data.image)
     if (data.thumbnail) formData.append('thumbnail', data.thumbnail)
 
@@ -43,14 +39,10 @@ export const BackTemplatesApi = {
     const formData = new FormData()
     if (data.title) formData.append('title', data.title)
     if (data.description) formData.append('description', data.description)
-    if (data.isActive !== undefined)
-      formData.append('isActive', String(data.isActive))
-    if (data.sortOrder !== undefined)
-      formData.append('sortOrder', String(data.sortOrder))
     if (data.image) formData.append('image', data.image)
     if (data.thumbnail) formData.append('thumbnail', data.thumbnail)
 
-    return apiClient.put<BackTemplate>({
+    return apiClient.patch<BackTemplate>({
       url: BACK_TEMPLATES_URLS.template(id),
       payload: formData,
       contentType: 'multipart/form-data',

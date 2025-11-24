@@ -1,6 +1,6 @@
 import { Loader2, Trash2 } from 'lucide-react'
 import type { BackTemplate } from '@/modules/back-templates/types'
-import { useDeleteBackTemplate } from '@/modules/back-templates'
+import { EditBackTemplate, useDeleteBackTemplate } from '@/modules/back-templates'
 import { Button } from '@/shared/components/ui/button.tsx'
 import { getFileLink } from '@/shared/api/utils.tsx'
 import {
@@ -55,18 +55,21 @@ export const BackTemplateBlock = ({ template }: { template: BackTemplate }) => {
         </div>
       </div>
 
-      <Button
-        variant="destructive"
-        size="sm"
-        onClick={() => handleDelete(template.id)}
-        disabled={isPending}
-      >
-        {isPending ? (
-          <Loader2 className="animate-spin" size={16} />
-        ) : (
-          <Trash2 size={16} />
-        )}
-      </Button>
+      <div className="flex gap-2">
+        <EditBackTemplate template={template} />
+        <Button
+          variant="destructive"
+          size="sm"
+          onClick={() => handleDelete(template.id)}
+          disabled={isPending}
+        >
+          {isPending ? (
+            <Loader2 className="animate-spin" size={16} />
+          ) : (
+            <Trash2 size={16} />
+          )}
+        </Button>
+      </div>
     </div>
   )
 }
