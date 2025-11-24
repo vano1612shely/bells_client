@@ -47,7 +47,6 @@ export const EditOption = ({ option }: { option: Option }) => {
         if (smallFile) formData.append('small', smallFile)
         if (largeFile) formData.append('large', largeFile)
         handleUpdate({
-          categoryId: option.categoryId,
           optionId: option.id,
           data: formData,
         })
@@ -55,7 +54,6 @@ export const EditOption = ({ option }: { option: Option }) => {
       }
 
       handleUpdate({
-        categoryId: option.categoryId,
         optionId: option.id,
         data: payload,
       })
