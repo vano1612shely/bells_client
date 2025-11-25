@@ -56,11 +56,11 @@ export const CharacteristicsApi = {
     categoryId: string,
     data: CreateOptionInput & { small?: File; large?: File },
   ) => {
-    console.log(data)
     const formData = new FormData()
     formData.append('title', data.title)
-    if (data.metadata?.colorHex)
+    if (data.metadata?.colorHex) {
       formData.append('metadata', JSON.stringify(data.metadata))
+    }
     if (data.small) {
       formData.append('small', data.small)
     }
@@ -69,7 +69,7 @@ export const CharacteristicsApi = {
     }
     return apiClient.post<Option>({
       url: CHARACTERISTICS_URL.options(categoryId),
-      payload: data,
+      payload: formData,
       contentType: 'multipart/form-data',
     })
   },

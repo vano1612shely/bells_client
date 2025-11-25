@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { PayPalButtons } from '@paypal/react-paypal-js'
 import { toast } from 'sonner'
+import type { PayPalButtonsComponentProps } from '@paypal/react-paypal-js'
 import type { OrderItem } from '@/modules/orders/types'
 import { StatusBadge, useOrder } from '@/modules/orders'
 import { useCapturePaypalOrder, useCreatePaypalOrder } from '@/modules/payments'
@@ -170,6 +171,27 @@ export const OrderDetailPage = () => {
   const paypalCurrency = import.meta.env.VITE_PAYPAL_CURRENCY || 'EUR'
   const hasPaypalClient = Boolean(import.meta.env.VITE_PAYPAL_CLIENT_ID)
   const isPaid = order.status === 'PAID'
+  const fundingOptions: Array<{
+    fundingSource:
+      | PayPalButtonsComponentProps['fundingSource']
+      | 'applepay'
+      | 'googlepay'
+    style?: PayPalButtonsComponentProps['style']
+  }> = [
+    { fundingSource: 'paypal', style: { layout: 'vertical', shape: 'pill' } },
+    {
+      fundingSource: 'card',
+      style: { layout: 'vertical', shape: 'pill', color: 'white' },
+    },
+    {
+      fundingSource: 'applepay',
+      style: { layout: 'vertical', shape: 'pill', color: 'black' },
+    },
+    {
+      fundingSource: 'googlepay',
+      style: { layout: 'vertical', shape: 'pill', color: 'black' },
+    },
+  ]
 
   const handleCreatePaypalOrder = async () => {
     const created = await createPaypalOrder({ orderId: order.id })
@@ -384,64 +406,28 @@ export const OrderDetailPage = () => {
 
             {!isPaid && hasPaypalClient && (
               <div className="mt-6 space-y-3">
-                <h3 className="text-sm font-semibold">Payer avec PayPal</h3>
-                <div className="rounded-lg border p-3 bg-muted/50">
-                  <PayPalButtons
-                    style={{ layout: 'vertical', shape: 'pill' }}
-                    disabled={isProcessingPayment || isPaid}
-                    forceReRender={[
-                      order.totalPriceWithDiscount,
-                      paypalCurrency,
-                    ]}
-                    fundingSource="paypal"
-                    createOrder={async () => {
-                      try {
-                        return await handleCreatePaypalOrder()
-                      } catch (error) {
-                        console.error(error)
-                        toast.error('Impossible de creer le paiement PayPal')
-                        throw error
-                      }
-                    }}
-                    onApprove={async (data) => {
-                      if (!data.orderID) {
-                        toast.error('Identifiant PayPal manquant')
-                        return
-                      }
-                      try {
-                        await handleCapturePayment(data.orderID)
-                      } catch (error) {
-                        console.error(error)
-                        toast.error(
-                          'Erreur lors de la confirmation du paiement',
-                        )
-                      }
-                    }}
-                    onCancel={() => toast.info('Paiement PayPal annule')}
-                    onError={(err) => {
-                      console.error(err)
-                      toast.error('Erreur PayPal, veuillez reessayer')
-                    }}
-                  />
-                  <div className="mt-3">
+                <h3 className="text-sm font-semibold">
+                  Payer en ligne (PayPal / Apple Pay / Google Pay)
+                </h3>
+                <div className="rounded-lg border p-3 bg-muted/50 space-y-3">
+                  {fundingOptions.map(({ fundingSource, style }) => (
                     <PayPalButtons
-                      style={{
-                        layout: 'vertical',
-                        shape: 'pill',
-                        color: 'white',
-                      }}
+                      key={fundingSource}
+                      style={style}
                       disabled={isProcessingPayment || isPaid}
                       forceReRender={[
                         order.totalPriceWithDiscount,
                         paypalCurrency,
                       ]}
-                      fundingSource="card"
+                      fundingSource={
+                        fundingSource as PayPalButtonsComponentProps['fundingSource']
+                      }
                       createOrder={async () => {
                         try {
                           return await handleCreatePaypalOrder()
                         } catch (error) {
                           console.error(error)
-                          toast.error('Impossible de creer le paiement (carte)')
+                          toast.error('Impossible de creer le paiement')
                           throw error
                         }
                       }}
@@ -465,21 +451,14 @@ export const OrderDetailPage = () => {
                         toast.error('Erreur de paiement, veuillez reessayer')
                       }}
                     />
-                  </div>
+                  ))}
                   {isProcessingPayment && (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground mt-2">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Loader2 className="h-4 w-4 animate-spin" />
                       <span>Traitement du paiement...</span>
                     </div>
                   )}
                 </div>
-              </div>
-            )}
-
-            {!hasPaypalClient && !isPaid && (
-              <div className="mt-4 text-sm text-muted-foreground">
-                PayPal n'est pas configur� sur le client. Ajoutez la variable
-                VITE_PAYPAL_CLIENT_ID pour activer le paiement.
               </div>
             )}
 

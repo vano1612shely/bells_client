@@ -78,7 +78,7 @@ export const RelayPointModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="min-w-[80%] max-w-[1000px]">
+      <DialogContent className="min-w-[80%] max-w-[1000px] max-h-[90%] overflow-auto">
         <DialogHeader>
           <h3 className="text-lg font-semibold">Choisir un point relais</h3>
         </DialogHeader>
