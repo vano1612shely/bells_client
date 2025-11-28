@@ -406,9 +406,7 @@ export const OrderDetailPage = () => {
 
             {!isPaid && hasPaypalClient && (
               <div className="mt-6 space-y-3">
-                <h3 className="text-sm font-semibold">
-                  Payer en ligne (PayPal / Apple Pay / Google Pay)
-                </h3>
+                <h3 className="text-sm font-semibold">Payer en ligne</h3>
                 <div className="rounded-lg border p-3 bg-muted/50 space-y-3">
                   {fundingOptions.map(({ fundingSource, style }) => (
                     <PayPalButtons
