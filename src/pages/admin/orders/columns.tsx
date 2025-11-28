@@ -8,7 +8,7 @@ import { OrderApi } from '@/modules/orders/api/api.ts'
 const base64ToBlob = (base64: string, mime = 'application/pdf') => {
   const sliceSize = 1024
   const byteChars = atob(base64)
-  const byteArrays: Uint8Array[] = []
+  const byteArrays: Array<Uint8Array> = []
 
   for (let offset = 0; offset < byteChars.length; offset += sliceSize) {
     const slice = byteChars.slice(offset, offset + sliceSize)
@@ -18,7 +18,8 @@ const base64ToBlob = (base64: string, mime = 'application/pdf') => {
     }
     byteArrays.push(new Uint8Array(byteNumbers))
   }
-
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   return new Blob(byteArrays, { type: mime })
 }
 
