@@ -82,11 +82,13 @@ const getBlobFile = async ({
     responseType: 'blob',
     params,
   }
+
   try {
-    const res: Blob = await rawApiClient.get(url, options)
-    const isZip = !!res.type && res.type === 'application/zip'
+    const res: AxiosResponse<Blob> = await rawApiClient.get(url, options)
+    const fileBlob = res.data
+    const isZip = !!fileBlob.type && fileBlob.type === 'application/zip'
     return {
-      fileBlob: res,
+      fileBlob,
       isZip,
     }
   } catch (e: any) {

@@ -101,6 +101,10 @@ export const OrderApi = {
     apiClient.get<Order>({
       url: ORDERS_URLS.order(id),
     }),
+  downloadPdf: (id: string) =>
+    apiClient.get<{ file_name: string; file_content: string }>({
+      url: ORDERS_URLS.downloadPdf(id),
+    }),
   updateOrderStatus: ({ id, status }: { id: string; status: string }) =>
     apiClient.patch({
       url: ORDERS_URLS.updateStatus(id),
